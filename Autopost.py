@@ -49,6 +49,7 @@ class Autopost:
         for item in items:
             try:
                 if item['id'] <= last_id:
+                    logging.info("repeat")
                     print(item['id'] <= last_id)
                     break
                 get_content(item, self.bot, self.CHANNEL_NAME)
@@ -76,7 +77,7 @@ class Autopost:
                 try:
                     # If the post has been fixed, skip it
                     # And start sending messages
-                    self.send_new_posts(entries, last_id)
+                    self.send_new_posts(entries[1:], last_id)
                 except KeyError:
                     self.send_new_posts(entries, last_id)
                 # Write the new last_id to the file.

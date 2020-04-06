@@ -1,15 +1,15 @@
 import time
+from tools import save
 
 import logging
 import telebot
 import eventlet
 import requests
 
-from tools import get_content, save
 
-
-class Autopost:
-    def __init__(self, FILENAME_VK, URL_VK, TOKEN, BOT_TOKEN, CHANNEL_NAME, BASE_POST_URL, DOMAIN, VERSION, SINGLE_RUN):
+class Posting:
+    def __init__(self, FILENAME_VK, URL_VK, TOKEN, BOT_TOKEN, CHANNEL_NAME, BASE_POST_URL, DOMAIN, VERSION, SINGLE_RUN,
+                 GET_CONTENT):
         self.FILENAME_VK = FILENAME_VK
         self.URL_VK = URL_VK
         self.TOKEN = TOKEN
@@ -20,6 +20,7 @@ class Autopost:
         self.DOMAIN = DOMAIN
         self.VERSION = VERSION
         self.SINGLE_RUN = SINGLE_RUN
+        self.GET_CONTENT = GET_CONTENT
 
     def get_data(self) -> dict or None:
         timeout = eventlet.Timeout(10)
@@ -27,7 +28,7 @@ class Autopost:
             response = requests.get(self.URL_VK,
                                     params={
                                         "domain": self.DOMAIN,
-                                        "count": "10",  # <100
+                                        "count": "5",  # <100
                                         "access_token": self.TOKEN,
                                         "v": self.VERSION,
                                     },
@@ -52,7 +53,7 @@ class Autopost:
                     logging.info("repeat")
                     print(item['id'] <= last_id)
                     break
-                get_content(item, self.bot, self.CHANNEL_NAME)
+                self.GET_CONTENT(item, self.bot, self.CHANNEL_NAME)
                 # We sleep a second to avoid all sorts of errors and restrictions (just in case!)
                 time.sleep(1)
             except Exception as e:
